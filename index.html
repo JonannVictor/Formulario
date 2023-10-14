@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css">
+  <title>Formulário</title>
+</head>
+
+<body>
+  <h1>Formulário de Emprego</h1>
+  <form>
+    <fieldset id="name">
+      <div id="nome" class="formulário">
+        <label for="nome">
+          <h3>Nome:</h3>
+        </label>
+        <input type="text" id="nome" name="nome" size="35" required />
+        <div id="sobrenome">
+          <label for="nome">
+            <h3>Sobrenome</h3>
+          </label>
+          <input type="text" id="nome" name="sobenome" size="35" required />
+        </div>
+    </fieldset>
+    <fieldset id="dados">
+      <div class="formulário">
+        <label for="email">
+          <h3>E-mail:</h3>
+        </label>
+        <input type="text" name="email" id="email" placeholder="exemplo@exemplo.com" size="25" required />
+      </div>
+      <div class="formulário">
+        <label>
+          <h3>Telefone:</h3>
+        </label>
+        <input type="tel" name="Telefone" id="Telefone" placeholder="Com o DDD" maxlength="11" required />
+      </div>
+    </fieldset>
+    <fieldset>
+      <div class="formulário" id="Data">
+        <label>
+          <h3>Data Nascimento:</h3>
+        </label>
+        <input type="date" maxlength="4" name="data" required />
+    </fieldset>
+    <fieldset>
+      <div class="formulário">
+        <label for="CPF">
+          <h3>CPF:</h3>
+        </label>
+        <input type="CPF" placeholder="000.000.000-00" maxlength="11" id="CPF" name="cpf" required />
+      </div>
+    </fieldset>
+    <fieldset>
+      <div class="formulário">
+        <label>
+          <h3>Já alguma vez foi condenado por algum delito ou crime?</h3>
+        </label>
+        <input type="radio" id="opição1" name="condenacao" value="Sim" />
+        <label for="opição1">Sim</label>
+        <input type="radio" id="opição2" name="condenacao" value="Não" />
+        <label for="opição2">Não</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <div>
+        <label for="cidade">
+          <h3>Mande seu curriculo por PDF:</h3>
+        </label>
+        <input type="file" id="curriculo" accept=".pdf" required>
+        <p>Se não for por pdf não será aceito!</p>
+      </div>
+      <div class="formulário">
+        <label for="mensagem">
+          <h3>Mensagem:</h3>
+        </label>
+        <textarea id="menssagem" rows="5" required>
+        </textarea>
+      </div>
+    </fieldset>
+    <input id="botao" type="reset" value="limpar">
+    <input id="botao" type="submit" value="Enviar">
+  </form>
+ </body>
+</html>
