@@ -10,7 +10,7 @@ body {
 }
 
 fieldset {
-  display: flexbox;
+  display: flex;
   align-items: center;
   justify-content: space-around;
   border-radius: 9px;
