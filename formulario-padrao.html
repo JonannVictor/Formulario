@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulário Padrão — Agência Hineni</title>
+<style>
+  :root {
+    --brand: #1F2937;
+    --accent: #0F766E;
+    --accent-light: #ECFDF5;
+    --light: #F1F5F9;
+    --field: #2563EB;
+    --amber-bg: #FEF3C7;
+    --amber-text: #92400E;
+    --border: #E2E8F0;
+    --danger: #B91C1C;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Calibri, Arial, sans-serif;
+    background: #F8FAFC;
+    color: var(--brand);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 80px; }
+  header { text-align: center; margin-bottom: 28px; }
+  header .brand { color: var(--accent); font-weight: 700; font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; }
+  header h1 { margin: 6px 0 4px; font-size: 26px; color: var(--brand); }
+  header p { margin: 0; color: #64748B; font-size: 14px; }
+
+  .note-box {
+    background: var(--light);
+    border-left: 4px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    color: #475569;
+    margin-bottom: 28px;
+  }
+
+  .section {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .section h2 {
+    font-size: 17px;
+    color: var(--accent);
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section h2 .num {
+    background: var(--accent);
+    color: #fff;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .section .sub { font-size: 13px; color: #94A3B8; margin: 0 0 18px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+  .grid .full { grid-column: 1 / -1; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #334155; }
+  label .opt { font-weight: 400; color: #94A3B8; }
+  input[type=text], input[type=date], input[type=tel], input[type=email], select, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid #CBD5E1;
+    border-radius: 7px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--brand);
+  }
+  textarea { resize: vertical; min-height: 64px; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+  .field { margin-bottom: 2px; }
+
+  .radio-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+  .radio-row label { display: flex; align-items: center; gap: 6px; font-weight: 400; font-size: 13.5px; color: var(--brand); margin: 0; }
+  .radio-row input { width: auto; }
+
+  .desconto-alert {
+    display: none;
+    margin-top: 8px;
+    background: var(--amber-bg);
+    color: var(--amber-text);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  .actions { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 13px 22px;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  #gerarBtn { background: var(--accent); color: #fff; flex: 1; min-width: 200px; }
+  #gerarBtn:hover { background: #0d6259; }
+  #limparBtn { background: #fff; color: #64748B; border: 1px solid #CBD5E1; }
+
+  #resultado { display: none; margin-top: 24px; }
+  #resultado .section { border-color: var(--accent); }
+  #resumoBox {
+    white-space: pre-wrap;
+    background: var(--light);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 13.5px;
+    color: #1E293B;
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+    line-height: 1.6;
+  }
+  .copy-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .copy-actions button { background: var(--brand); color: #fff; padding: 10px 18px; font-size: 13.5px; }
+  .copy-actions button.wa { background: #128C7E; }
+  .copy-actions .copied { background: var(--accent) !important; }
+  #crmBtn { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
+  #crmBtn:disabled { background: #F1F5F9; color: #94A3B8; border-color: #CBD5E1; cursor: not-allowed; }
+  #emailBtn { background: #fff; color: #334155; border: 1.5px solid #334155; }
+  #emailBtn:disabled { background: #F1F5F9; color: #94A3B8; border-color: #CBD5E1; cursor: not-allowed; }
+
+  .required:after { content: " *"; color: var(--danger); }
+  footer { text-align: center; font-size: 12px; color: #94A3B8; margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Agência Hineni</div>
+    <h1>Formulário Padrão de Fechamento</h1>
+    <p>Preencha antes da Reunião de Fechamento — Manual do Vendedor, seção 11</p>
+  </header>
+
+  <div class="note-box">
+    Este é o formulário único para todas as empresas, referenciado no Manual do Vendedor e no Processo de Vendas. Preencha os três blocos abaixo e use o botão <strong>"Gerar resumo"</strong> ao final para criar um texto pronto para enviar à Hineni (WhatsApp ou e-mail) antes da Reunião de Fechamento.
+  </div>
+
+  <form id="formHineni">
+    <div class="section">
+      <h2><span class="num">0</span> Dados de quem preenche</h2>
+      <p class="sub">Identificação do vendedor responsável pela venda</p>
+      <div class="grid">
+        <div class="field">
+          <label class="required">Nome do vendedor</label>
+          <input type="text" name="vendedorNome" required>
+        </div>
+        <div class="field">
+          <label>Data do preenchimento</label>
+          <input type="date" name="dataPreenchimento">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">1</span> Dados do cliente</h2>
+      <p class="sub">Informações de contato e identificação da empresa</p>
+      <div class="grid">
+        <div class="field">
+          <label class="required">Nome do responsável</label>
+          <input type="text" name="clienteResponsavel" required>
+        </div>
+        <div class="field">
+          <label class="required">Nome da empresa</label>
+          <input type="text" name="clienteEmpresa" required>
+        </div>
+        <div class="field">
+          <label>CNPJ <span class="opt">(quando aplicável)</span></label>
+          <input type="text" name="clienteCnpj" placeholder="00.000.000/0000-00">
+        </div>
+        <div class="field">
+          <label class="required">WhatsApp</label>
+          <input type="tel" name="clienteWhatsapp" required placeholder="(00) 00000-0000">
+        </div>
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" name="clienteEmail">
+        </div>
+        <div class="field">
+          <label>Instagram/site atual <span class="opt">(se houver)</span></label>
+          <input type="text" name="clienteInstagram">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">2</span> Dados da venda</h2>
+      <p class="sub">Condições comerciais fechadas com o cliente</p>
+      <div class="grid">
+        <div class="field full">
+          <label class="required">Serviço contratado</label>
+          <select name="servico" required>
+            <option value="">Selecione...</option>
+            <option>Landing Page</option>
+            <option>Site Institucional</option>
+            <option>Site Premium</option>
+            <option>Sistema Web</option>
+            <option>Desenvolvimento Sob Medida (SaaS/complexo)</option>
+            <option>Hineni Prospect</option>
+            <option>Continuidade mensal (Essencial/Pro/Growth)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="required">Valor final da venda (R$)</label>
+          <input type="text" name="valorFinal" required placeholder="Ex: 2.990,00">
+        </div>
+        <div class="field">
+          <label>Desconto concedido</label>
+          <select name="descontoFaixa" onchange="checarDesconto()">
+            <option value="Nenhum">Nenhum</option>
+            <option value="Até 5%">Até 5% (autonomia do vendedor)</option>
+            <option value="5% a 10%">5% a 10% (consultado com a Hineni)</option>
+            <option value="Acima de 10%">Acima de 10% (aprovado pela Hineni)</option>
+          </select>
+          <div id="descontoAlerta" class="desconto-alert">⚠ Confirme que este desconto teve a aprovação necessária da Hineni antes da Reunião de Fechamento (Manual do Vendedor, seção 8).</div>
+        </div>
+        <div class="field">
+          <label class="required">Forma de pagamento</label>
+          <select name="formaPagamento" required>
+            <option value="">Selecione...</option>
+            <option>À vista</option>
+            <option>Parcelado</option>
+            <option>Pix</option>
+            <option>Cartão</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>Condição de pagamento</label>
+          <input type="text" name="condicaoPagamento" placeholder="Ex: 50% na assinatura + 50% na entrega">
+        </div>
+        <div class="field">
+          <label class="required">Data do fechamento</label>
+          <input type="date" name="dataFechamento" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">3</span> Informações do projeto</h2>
+      <p class="sub">O que foi levantado com o cliente durante a negociação</p>
+      <div class="grid">
+        <div class="field full">
+          <label class="required">O que o cliente deseja</label>
+          <textarea name="projetoDesejo" required></textarea>
+        </div>
+        <div class="field full">
+          <label class="required">Objetivo principal</label>
+          <textarea name="projetoObjetivo" required></textarea>
+        </div>
+        <div class="field full">
+          <label>Referências <span class="opt">(sites, exemplos citados pelo cliente)</span></label>
+          <textarea name="projetoReferencias"></textarea>
+        </div>
+        <div class="field full">
+          <label>Funcionalidades solicitadas</label>
+          <textarea name="projetoFuncionalidades"></textarea>
+        </div>
+        <div class="field full">
+          <label>Observações importantes levantadas durante a negociação</label>
+          <textarea name="projetoObservacoes"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" id="gerarBtn" onclick="gerarResumo()">Gerar resumo para envio</button>
+      <button type="button" id="limparBtn" onclick="limparForm()">Limpar formulário</button>
+    </div>
+  </form>
+
+  <div id="resultado">
+    <div class="section">
+      <h2><span class="num">✓</span> Resumo pronto</h2>
+      <p class="sub">Copie e envie para a Hineni por WhatsApp ou e-mail antes da Reunião de Fechamento</p>
+      <div id="resumoBox"></div>
+      <div class="copy-actions">
+        <button type="button" id="copyBtn" onclick="copiarResumo()">Copiar resumo</button>
+        <button type="button" class="wa" onclick="enviarWhatsapp()">Abrir no WhatsApp</button>
+        <button type="button" id="emailBtn" onclick="enviarPorEmail()">Enviar por e-mail</button>
+        <button type="button" id="crmBtn" onclick="enviarParaCRM()">Enviar para o CRM</button>
+      </div>
+      <div id="crmStatus" style="display:none; margin-top:10px; font-size:12.5px; font-weight:600;"></div>
+      <div id="emailStatus" style="display:none; margin-top:6px; font-size:12.5px; font-weight:600;"></div>
+    </div>
+  </div>
+
+  <footer>Agência Hineni — hineni.agency — Formulário Padrão v1.0</footer>
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURAÇÃO DA INTEGRAÇÃO COM O CRM
+   Quando o CRM tiver um endpoint de API pronto para receber
+   novos leads/vendas, preencha os dois valores abaixo:
+   - CRM_API_URL: a URL do endpoint (ex.: "https://crm.hineni.agency/api/leads")
+   - CRM_API_KEY: token/chave de autenticação, se o endpoint exigir
+   Enquanto CRM_API_URL estiver vazio, o botão "Enviar para o CRM"
+   fica desabilitado e o formulário funciona só no modo WhatsApp/cópia.
+   ============================================================ */
+var CONFIG = {
+  CRM_API_URL: '', // ex: 'https://crm.hineni.agency/api/leads'
+  CRM_API_KEY: '',  // ex: 'sk_live_xxxxxxxx' — enviado como header Authorization
+
+  /* ENVIO AUTOMÁTICO POR E-MAIL (via script PHP hospedado na Hostinger)
+     Este formulário envia os dados para o endpoint "enviar.php", que deve
+     estar publicado na mesma pasta deste arquivo dentro da hospedagem.
+     Não é necessário nenhuma chave aqui — a configuração de SMTP fica
+     dentro do próprio enviar.php. */
+  ENDPOINT_EMAIL: 'enviar.php',
+
+  // Número de WhatsApp que recebe as mensagens do botão "Abrir no WhatsApp" (DDI+DDD+número, sem espaços/símbolos)
+  WHATSAPP_DESTINO: '5551989100198'
+};
+
+function checarDesconto() {
+  var v = document.querySelector('[name=descontoFaixa]').value;
+  var alerta = document.getElementById('descontoAlerta');
+  alerta.style.display = (v === '5% a 10%' || v === 'Acima de 10%') ? 'block' : 'none';
+}
+
+function val(name) {
+  var el = document.querySelector('[name=' + name + ']');
+  return el && el.value ? el.value.trim() : '—';
+}
+
+function formatarData(iso) {
+  if (!iso || iso === '—') return '—';
+  var partes = iso.split('-');
+  if (partes.length !== 3) return iso;
+  return partes[2] + '/' + partes[1] + '/' + partes[0];
+}
+
+var resumoTexto = '';
+
+function gerarResumo() {
+  var form = document.getElementById('formHineni');
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  resumoTexto =
+'*FORMULÁRIO PADRÃO — AGÊNCIA HINENI*\n' +
+'Preenchido por: ' + val('vendedorNome') + '\n' +
+'Data: ' + formatarData(val('dataPreenchimento')) + '\n\n' +
+
+'*1. DADOS DO CLIENTE*\n' +
+'Responsável: ' + val('clienteResponsavel') + '\n' +
+'Empresa: ' + val('clienteEmpresa') + '\n' +
+'CNPJ: ' + val('clienteCnpj') + '\n' +
+'WhatsApp: ' + val('clienteWhatsapp') + '\n' +
+'E-mail: ' + val('clienteEmail') + '\n' +
+'Instagram/site atual: ' + val('clienteInstagram') + '\n\n' +
+
+'*2. DADOS DA VENDA*\n' +
+'Serviço: ' + val('servico') + '\n' +
+'Valor final: R$ ' + val('valorFinal') + '\n' +
+'Desconto: ' + val('descontoFaixa') + '\n' +
+'Forma de pagamento: ' + val('formaPagamento') + '\n' +
+'Condição de pagamento: ' + val('condicaoPagamento') + '\n' +
+'Data do fechamento: ' + formatarData(val('dataFechamento')) + '\n\n' +
+
+'*3. INFORMAÇÕES DO PROJETO*\n' +
+'O que o cliente deseja: ' + val('projetoDesejo') + '\n' +
+'Objetivo principal: ' + val('projetoObjetivo') + '\n' +
+'Referências: ' + val('projetoReferencias') + '\n' +
+'Funcionalidades solicitadas: ' + val('projetoFuncionalidades') + '\n' +
+'Observações: ' + val('projetoObservacoes') + '\n\n' +
+'— Encaminhado para agendamento da Reunião de Fechamento.';
+
+  document.getElementById('resumoBox').textContent = resumoTexto;
+  document.getElementById('resultado').style.display = 'block';
+  document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function montarPayload() {
+  return {
+    vendedor: { nome: val('vendedorNome'), data_preenchimento: val('dataPreenchimento') },
+    cliente: {
+      responsavel: val('clienteResponsavel'),
+      empresa: val('clienteEmpresa'),
+      cnpj: val('clienteCnpj'),
+      whatsapp: val('clienteWhatsapp'),
+      email: val('clienteEmail'),
+      instagram_site: val('clienteInstagram')
+    },
+    venda: {
+      servico: val('servico'),
+      valor_final: val('valorFinal'),
+      desconto: val('descontoFaixa'),
+      forma_pagamento: val('formaPagamento'),
+      condicao_pagamento: val('condicaoPagamento'),
+      data_fechamento: val('dataFechamento')
+    },
+    projeto: {
+      desejo: val('projetoDesejo'),
+      objetivo: val('projetoObjetivo'),
+      referencias: val('projetoReferencias'),
+      funcionalidades: val('projetoFuncionalidades'),
+      observacoes: val('projetoObservacoes')
+    },
+    origem: 'formulario_padrao_hineni_v1'
+  };
+}
+
+function enviarParaCRM() {
+  var status = document.getElementById('crmStatus');
+  status.style.display = 'block';
+
+  if (!CONFIG.CRM_API_URL) {
+    status.style.color = '#B45309';
+    status.textContent = '⚠ CRM ainda não conectado a este formulário. Use "Copiar resumo" ou "Abrir no WhatsApp" por enquanto.';
+    return;
+  }
+
+  var btn = document.getElementById('crmBtn');
+  btn.disabled = true;
+  status.style.color = '#64748B';
+  status.textContent = 'Enviando...';
+
+  var headers = { 'Content-Type': 'application/json' };
+  if (CONFIG.CRM_API_KEY) headers['Authorization'] = 'Bearer ' + CONFIG.CRM_API_KEY;
+
+  fetch(CONFIG.CRM_API_URL, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(montarPayload())
+  }).then(function(res) {
+    btn.disabled = false;
+    if (res.ok) {
+      status.style.color = '#166534';
+      status.textContent = '✓ Enviado para o CRM com sucesso.';
+    } else {
+      status.style.color = '#991B1B';
+      status.textContent = '✗ O CRM recusou o envio (erro ' + res.status + '). Use o WhatsApp como alternativa e avise a Hineni.';
+    }
+  }).catch(function() {
+    btn.disabled = false;
+    status.style.color = '#991B1B';
+    status.textContent = '✗ Não foi possível conectar ao CRM agora. Use "Copiar resumo" ou "Abrir no WhatsApp" para não perder os dados.';
+  });
+}
+
+function enviarPorEmail() {
+  var status = document.getElementById('emailStatus');
+  status.style.display = 'block';
+
+  if (!resumoTexto) {
+    status.style.color = '#B45309';
+    status.textContent = '⚠ Clique primeiro em "Gerar resumo" antes de enviar por e-mail.';
+    return;
+  }
+
+  var btn = document.getElementById('emailBtn');
+  btn.disabled = true;
+  status.style.color = '#64748B';
+  status.textContent = 'Enviando e-mail...';
+
+  fetch(CONFIG.ENDPOINT_EMAIL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      assunto: 'Formulário Padrão — ' + val('clienteEmpresa'),
+      mensagem: resumoTexto,
+      origem: val('vendedorNome')
+    })
+  }).then(function(res) {
+    btn.disabled = false;
+    if (res.ok) {
+      status.style.color = '#166534';
+      status.textContent = '✓ E-mail enviado com sucesso.';
+    } else {
+      status.style.color = '#991B1B';
+      status.textContent = '✗ Não foi possível enviar o e-mail agora. Use "Copiar resumo" ou "Abrir no WhatsApp" para não perder os dados.';
+    }
+  }).catch(function() {
+    btn.disabled = false;
+    status.style.color = '#991B1B';
+    status.textContent = '✗ Não foi possível enviar o e-mail agora. Use "Copiar resumo" ou "Abrir no WhatsApp" para não perder os dados.';
+  });
+}
+
+function copiarResumo() {
+  navigator.clipboard.writeText(resumoTexto).then(function() {
+    var btn = document.getElementById('copyBtn');
+    var original = btn.textContent;
+    btn.textContent = 'Copiado ✓';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = original; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function enviarWhatsapp() {
+  var texto = encodeURIComponent(resumoTexto);
+  window.open('https://wa.me/' + CONFIG.WHATSAPP_DESTINO + '?text=' + texto, '_blank');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (!CONFIG.CRM_API_URL) {
+    var btn = document.getElementById('crmBtn');
+    btn.title = 'CRM ainda não conectado — preencha CONFIG.CRM_API_URL no código quando o endpoint estiver pronto.';
+  }
+});
+
+function limparForm() {
+  if (confirm('Limpar todos os campos preenchidos?')) {
+    document.getElementById('formHineni').reset();
+    document.getElementById('resultado').style.display = 'none';
+    document.getElementById('descontoAlerta').style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>
