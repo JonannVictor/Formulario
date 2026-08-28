@@ -305,16 +305,15 @@
 <script>
 /* ============================================================
    CONFIGURAÇÃO DA INTEGRAÇÃO COM O CRM
-   Quando o CRM tiver um endpoint de API pronto para receber
-   novos leads/vendas, preencha os dois valores abaixo:
-   - CRM_API_URL: a URL do endpoint (ex.: "https://crm.hineni.agency/api/leads")
-   - CRM_API_KEY: token/chave de autenticação, se o endpoint exigir
-   Enquanto CRM_API_URL estiver vazio, o botão "Enviar para o CRM"
-   fica desabilitado e o formulário funciona só no modo WhatsApp/cópia.
+   Aponta para a API pública de leads do CRM (POST /api/v1/leads),
+   autenticada por chave de organização (header X-API-Key). A chave é
+   gerada uma única vez com "npm run create-api-key" no backend do CRM
+   e não pode ser recuperada depois — só revogada (api_keys.active) e
+   substituída por uma nova.
    ============================================================ */
 var CONFIG = {
-  CRM_API_URL: '', // ex: 'https://crm.hineni.agency/api/leads'
-  CRM_API_KEY: '',  // ex: 'sk_live_xxxxxxxx' — enviado como header Authorization
+  CRM_API_URL: 'https://crm.hineni.agency/api/v1/leads',
+  CRM_API_KEY: 'crm_live_GkOif4ZHOOPTwnveSQnbK-kbD7r6Hexw-VltbEW2c6E',
 
   /* ENVIO AUTOMÁTICO POR E-MAIL (via script PHP hospedado na Hostinger)
      Este formulário envia os dados para o endpoint "enviar.php", que deve
@@ -388,33 +387,49 @@ function gerarResumo() {
   document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function valOuNulo(name) {
+  var v = val(name);
+  return v === '—' ? null : v;
+}
+
+// O CRM só tem coluna própria pra nome/empresa/telefone/e-mail/serviço —
+// o resto (comercial + projeto) não tem onde morar como campo estruturado,
+// então vira um bloco de texto legível em "notes" (mesmo padrão que a
+// integração do JARVS já usa pros campos dela sem coluna própria).
+function montarNotas() {
+  var linhas = [
+    'Preenchido por: ' + val('vendedorNome') + ' em ' + formatarData(val('dataPreenchimento')),
+    valOuNulo('clienteCnpj') ? 'CNPJ: ' + val('clienteCnpj') : null,
+    valOuNulo('clienteInstagram') ? 'Instagram/site atual: ' + val('clienteInstagram') : null,
+    '',
+    'Valor final da venda: R$ ' + val('valorFinal'),
+    'Desconto: ' + val('descontoFaixa'),
+    'Forma de pagamento: ' + val('formaPagamento'),
+    valOuNulo('condicaoPagamento') ? 'Condição de pagamento: ' + val('condicaoPagamento') : null,
+    'Data do fechamento: ' + formatarData(val('dataFechamento')),
+    '',
+    'O que o cliente deseja: ' + val('projetoDesejo'),
+    'Objetivo principal: ' + val('projetoObjetivo'),
+    valOuNulo('projetoReferencias') ? 'Referências: ' + val('projetoReferencias') : null,
+    valOuNulo('projetoFuncionalidades') ? 'Funcionalidades solicitadas: ' + val('projetoFuncionalidades') : null,
+    valOuNulo('projetoObservacoes') ? 'Observações: ' + val('projetoObservacoes') : null
+  ];
+  return linhas.filter(function(l) { return l !== null; }).join('\n');
+}
+
+// Formato esperado por POST /api/v1/leads (ver backend/src/controllers/
+// integrationsController.js:handlePublicCreateLead) — só esses campos são
+// lidos, tudo o mais no corpo é ignorado. "origin: 'formulario'" já bate
+// com a origem "Formulário" pré-cadastrada no CRM (seed.js).
 function montarPayload() {
   return {
-    vendedor: { nome: val('vendedorNome'), data_preenchimento: val('dataPreenchimento') },
-    cliente: {
-      responsavel: val('clienteResponsavel'),
-      empresa: val('clienteEmpresa'),
-      cnpj: val('clienteCnpj'),
-      whatsapp: val('clienteWhatsapp'),
-      email: val('clienteEmail'),
-      instagram_site: val('clienteInstagram')
-    },
-    venda: {
-      servico: val('servico'),
-      valor_final: val('valorFinal'),
-      desconto: val('descontoFaixa'),
-      forma_pagamento: val('formaPagamento'),
-      condicao_pagamento: val('condicaoPagamento'),
-      data_fechamento: val('dataFechamento')
-    },
-    projeto: {
-      desejo: val('projetoDesejo'),
-      objetivo: val('projetoObjetivo'),
-      referencias: val('projetoReferencias'),
-      funcionalidades: val('projetoFuncionalidades'),
-      observacoes: val('projetoObservacoes')
-    },
-    origem: 'formulario_padrao_hineni_v1'
+    name: val('clienteResponsavel'),
+    company: valOuNulo('clienteEmpresa'),
+    whatsapp: valOuNulo('clienteWhatsapp'),
+    email: valOuNulo('clienteEmail'),
+    service: valOuNulo('servico'),
+    origin: 'formulario',
+    notes: montarNotas()
   };
 }
 
@@ -434,7 +449,7 @@ function enviarParaCRM() {
   status.textContent = 'Enviando...';
 
   var headers = { 'Content-Type': 'application/json' };
-  if (CONFIG.CRM_API_KEY) headers['Authorization'] = 'Bearer ' + CONFIG.CRM_API_KEY;
+  if (CONFIG.CRM_API_KEY) headers['X-API-Key'] = CONFIG.CRM_API_KEY;
 
   fetch(CONFIG.CRM_API_URL, {
     method: 'POST',
