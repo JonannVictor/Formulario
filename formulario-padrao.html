@@ -305,15 +305,14 @@
 <script>
 /* ============================================================
    CONFIGURAÇÃO DA INTEGRAÇÃO COM O CRM
-   Aponta para a API pública de leads do CRM (POST /api/v1/leads),
-   autenticada por chave de organização (header X-API-Key). A chave é
-   gerada uma única vez com "npm run create-api-key" no backend do CRM
-   e não pode ser recuperada depois — só revogada (api_keys.active) e
-   substituída por uma nova.
+   Não chama o CRM direto do navegador (a API key não pode aparecer no
+   HTML/JS que qualquer visitante consegue ler). Em vez disso, chama a
+   função serverless /api/enviar-crm.js (hospedada nesta mesma Vercel),
+   que guarda a chave como variável de ambiente e repassa o POST para
+   https://crm.hineni.agency/api/v1/leads.
    ============================================================ */
 var CONFIG = {
-  CRM_API_URL: 'https://crm.hineni.agency/api/v1/leads',
-  CRM_API_KEY: 'crm_live_GkOif4ZHOOPTwnveSQnbK-kbD7r6Hexw-VltbEW2c6E',
+  CRM_API_URL: '/api/enviar-crm',
 
   /* ENVIO AUTOMÁTICO POR E-MAIL (via script PHP hospedado na Hostinger)
      Este formulário envia os dados para o endpoint "enviar.php", que deve
@@ -448,12 +447,9 @@ function enviarParaCRM() {
   status.style.color = '#64748B';
   status.textContent = 'Enviando...';
 
-  var headers = { 'Content-Type': 'application/json' };
-  if (CONFIG.CRM_API_KEY) headers['X-API-Key'] = CONFIG.CRM_API_KEY;
-
   fetch(CONFIG.CRM_API_URL, {
     method: 'POST',
-    headers: headers,
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(montarPayload())
   }).then(function(res) {
     btn.disabled = false;
